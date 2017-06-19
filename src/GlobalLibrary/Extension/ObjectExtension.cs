@@ -97,5 +97,13 @@ namespace GlobalLibrary
 		public static bool IsNotNull(this object obj) {
 			return obj != null;
 		}
+		/// <summary>
+		/// Преобразовывает число для отображения в input type number
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public static string ToViewNumber<T>(this T obj) where T:struct {
+			return (obj + "").Replace(',', '.');
+		}
 	}
 }
