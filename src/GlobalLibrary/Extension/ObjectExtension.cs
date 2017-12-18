@@ -1,6 +1,8 @@
-﻿using System;
+﻿using GlobalLibrary.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace GlobalLibrary
@@ -47,6 +49,21 @@ namespace GlobalLibrary
 				return defaultValue;
 			}
 		}
+		/// <summary>
+		/// Преобразование к типу Int
+		/// </summary>
+		/// <param name="obj">Объект</param>
+		/// <param name="defaultValue">Дефолтное значение</param>
+		/// <returns></returns>
+		public static int FromRomanToInt(this object obj, int defaultValue = 0) {
+			try {
+				var val = defaultValue;
+				val = RomanNumber.RomanToArabic(obj + "");
+				return val;
+			} catch {
+				return defaultValue;
+			}
+		}
 
 		/// <summary>
 		/// Преобразование к типу float
@@ -57,7 +74,7 @@ namespace GlobalLibrary
 		public static float ToFloat(this object obj, float defaultValue = 0) {
 			try {
 				var val = defaultValue;
-				float.TryParse(obj + "", out val);
+				float.TryParse((obj + "").Replace('.', ','), out val);
 				return val;
 			} catch {
 				return defaultValue;
@@ -104,6 +121,19 @@ namespace GlobalLibrary
 		/// <returns></returns>
 		public static string ToViewNumber<T>(this T obj) where T:struct {
 			return (obj + "").Replace(',', '.');
+		}
+
+		/// <summary>
+		/// Убирает пробелы по краям и задублированные
+		/// </summary>
+		/// <returns></returns>
+		public static string GetClearText(this object obj) {
+			var str = obj + "";
+			if (str.IsEmpty()) {
+				return null;
+			}
+			str = str.Trim();
+			return Regex.Replace(str, " {2,}", " ");
 		}
 	}
 }

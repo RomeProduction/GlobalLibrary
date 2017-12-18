@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace GlobalLibrary
-{
+namespace GlobalLibrary {
 	/// <summary>
 	/// Расширение для строк
 	/// </summary>
 	public static class StringExtension {
+
 		/// <summary>
 		/// Преобразует в Guid объект являющийся строкой
 		/// </summary>
@@ -35,7 +36,9 @@ namespace GlobalLibrary
 		/// <param name="obj">Объект</param>
 		/// <returns></returns>
 		public static bool IsEmpty(this string obj) {
-			obj = obj.Trim();
+			if (obj != null) {
+				obj = obj.Trim();
+			}
 			return string.IsNullOrEmpty(obj);
 		}
 
@@ -45,8 +48,21 @@ namespace GlobalLibrary
 		/// <param name="obj">Объект</param>
 		/// <returns></returns>
 		public static bool IsNotEmpty(this string obj) {
-			obj = obj.Trim();
+			if (obj != null) {
+				obj = obj.Trim();
+			}
 			return !string.IsNullOrEmpty(obj);
+		}
+		/// <summary>
+		/// Убирает пробелы по краям и задублированные
+		/// </summary>
+		/// <returns></returns>
+		public static string GetClearText(this string obj) {
+			if (obj.IsEmpty()) {
+				return null;
+			}
+			obj = obj.Trim();
+			return Regex.Replace(obj, " {2,}", " ");
 		}
 	}
 }
