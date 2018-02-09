@@ -43,8 +43,13 @@ namespace GlobalLibrary
 		public static int ToInt(this object obj, int defaultValue = 0) {
 			try {
 				var val = defaultValue;
-				int.TryParse(obj + "", out val);
-				return val;
+				if(obj is Enum) {
+					return (int)obj;
+				}
+				if(int.TryParse(obj + "", out val)) {
+					return val;
+				}
+				return defaultValue;
 			} catch {
 				return defaultValue;
 			}
@@ -74,8 +79,10 @@ namespace GlobalLibrary
 		public static float ToFloat(this object obj, float defaultValue = 0) {
 			try {
 				var val = defaultValue;
-				float.TryParse((obj + "").Replace('.', ','), out val);
-				return val;
+				if(float.TryParse((obj + "").Replace('.', ','), out val)) {
+					return val;
+				}
+				return defaultValue;
 			} catch {
 				return defaultValue;
 			}
@@ -90,8 +97,10 @@ namespace GlobalLibrary
 		public static double ToDouble(this object obj, double defaultValue = 0) {
 			try {
 				var val = defaultValue;
-				double.TryParse(obj + "", out val);
-				return val;
+				if (double.TryParse(obj + "", out val)) {
+					return val;
+				}
+				return defaultValue;
 			} catch {
 				return defaultValue;
 			}
