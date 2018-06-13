@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GlobalLibrary {
 	/// <summary>
@@ -30,20 +28,66 @@ namespace GlobalLibrary {
 
 			return res;
 		}
-
+		/// <summary>
+		/// Получить значение хранящееся в Description
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public static string GetDescription(this Enum value) {
 			try {
-				FieldInfo fi = value.GetType().GetField(value.ToString());
+				string result = "";
+				string[] values = null;
+				if ((value + "").Contains(",")) {
+					values = (value + "").Split(',').Select(x => x.Trim()).ToArray();
+				} else {
+					values = new string[] { value.ToString() };
+				}
 
-				DescriptionAttribute[] attributes =
-				(DescriptionAttribute[]) fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+				foreach (var val in values) {
+					FieldInfo fi = value.GetType().GetField(val);
 
-				if (attributes != null && attributes.Length > 0)
-					return attributes[0].Description;
-				else
-					return value.ToString();
+					DescriptionAttribute[] attributes =
+					(DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+					if (result != "") {
+						result += "; ";
+					}
+
+					if (attributes != null && attributes.Length > 0) {
+						result += attributes[0].Description;
+					} else {
+						result += val.ToString();
+					}
+				}
+
+				return result;
 			} catch {
 				return "";
+			}
+		}
+
+		/// <summary>
+		/// Получает все перечисленные значения, если перечисление содержит их несколько
+		/// </summary>
+		/// <param name="value">перечисление</param>
+		/// <returns></returns>
+		public static int[] GetArrayValues(this Enum value) {
+			try {
+				List<int> result = new List<int>();
+				string[] values = null;
+				if ((value + "").Contains(",")) {
+					values = (value + "").Split(',').Select(x => x.Trim()).ToArray();
+				} else {
+					values = new string[] { value.ToString() };
+				}
+
+				foreach (var val in values) {
+					FieldInfo fi = value.GetType().GetField(val);
+					result.Add((int)fi.GetValue(fi));
+				}
+
+				return result.ToArray();
+			} catch {
+				return new int[0];
 			}
 		}
 	}

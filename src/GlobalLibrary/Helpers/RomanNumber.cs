@@ -4,7 +4,7 @@ namespace GlobalLibrary.Helpers {
 	/// <summary>
 	/// Конвертер римских цифр
 	/// </summary>
-	public static class RomanNumber {
+	public abstract class RomanNumber {
 		/// <summary>
 		/// Основные римские цифры
 		/// </summary>

@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace GlobalLibrary
 {
@@ -55,6 +57,20 @@ namespace GlobalLibrary
 			}
 		}
 		/// <summary>
+		/// Преобразование к типу double
+		/// </summary>
+		/// <param name="obj">Объект</param>
+		/// <param name="defaultValue">Дефолтное значение</param>
+		/// <returns></returns>
+		public static int? ToIntNull(this object obj, int? defaultValue = null) {
+			try {
+				var val = obj as int?;
+				return val == null ? val : val;
+			} catch {
+				return defaultValue;
+			}
+		}
+		/// <summary>
 		/// Преобразование к типу Int
 		/// </summary>
 		/// <param name="obj">Объект</param>
@@ -76,13 +92,30 @@ namespace GlobalLibrary
 		/// <param name="obj">Объект</param>
 		/// <param name="defaultValue">Дефолтное значение</param>
 		/// <returns></returns>
-		public static float ToFloat(this object obj, float defaultValue = 0) {
+		public static float ToFloat(this object obj, float defaultValue = 0, int? round = null) {
 			try {
 				var val = defaultValue;
 				if(float.TryParse((obj + "").Replace('.', ','), out val)) {
+                    if (round.HasValue) {
+                        val = (float)Math.Round(val, round.Value);
+                    }
 					return val;
 				}
 				return defaultValue;
+			} catch {
+				return defaultValue;
+			}
+		}
+		/// <summary>
+		/// Преобразование к типу double
+		/// </summary>
+		/// <param name="obj">Объект</param>
+		/// <param name="defaultValue">Дефолтное значение</param>
+		/// <returns></returns>
+		public static float? ToFloatNull(this object obj, float? defaultValue = null) {
+			try {
+				var val = obj as float?;
+				return val == null ? val : val;
 			} catch {
 				return defaultValue;
 			}
@@ -98,6 +131,23 @@ namespace GlobalLibrary
 			try {
 				var val = defaultValue;
 				if (double.TryParse(obj + "", out val)) {
+					return val;
+				}
+				return defaultValue;
+			} catch {
+				return defaultValue;
+			}
+		}
+		/// <summary>
+		/// Преобразование к типу double
+		/// </summary>
+		/// <param name="obj">Объект</param>
+		/// <param name="defaultValue">Дефолтное значение</param>
+		/// <returns></returns>
+		public static double? ToDoubleNull(this object obj, double? defaultValue = null) {
+			try {
+				double val = 0;
+				if(double.TryParse(obj + "", out val)) {
 					return val;
 				}
 				return defaultValue;
@@ -134,6 +184,7 @@ namespace GlobalLibrary
 
 		/// <summary>
 		/// Убирает пробелы по краям и задублированные
+		/// а также заменяет ё на е
 		/// </summary>
 		/// <returns></returns>
 		public static string GetClearText(this object obj) {
@@ -142,7 +193,31 @@ namespace GlobalLibrary
 				return null;
 			}
 			str = str.Trim();
+			str = str.Replace('ё', 'е');
 			return Regex.Replace(str, " {2,}", " ");
 		}
-	}
+
+        /// <summary>
+        /// Получение значения из переменной
+        /// </summary>
+        /// <param name="obj">значение</param>
+        /// <returns></returns>
+        public static string GetStringValue(this object obj) {
+            if (obj == null) {
+                return "null";
+            }
+
+            if (obj.GetType().GetTypeInfo().IsPrimitive || obj.GetType().GetTypeInfo().IsEnum || obj is string) {
+                return obj.ToString();
+            }
+
+            try {
+                return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize
+                });
+            } catch {
+                return obj.ToString();
+            }
+        }
+    }
 }
